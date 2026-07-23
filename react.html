@@ -201,7 +201,13 @@
     border-color: var(--accent);
   }
 
+  .card-form-actions {
+    display: flex;
+    gap: 10px;
+  }
+
   .card-form button {
+    flex: 1;
     padding: 12px;
     border: none;
     border-radius: 10px;
@@ -305,33 +311,72 @@
       );
     }
 
-    function SaveCardForm() {
+    function ContactActionsForm() {
       const [name, setName] = useState("");
       const [email, setEmail] = useState("");
+      const [date, setDate] = useState("");
       const [status, setStatus] = useState("idle");
+      const [error, setError] = useState("");
 
-      async function handleSubmit(event) {
-        event.preventDefault();
+      const now = new Date();
+      const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+
+      async function sendPayload(payload, resetDate) {
         setStatus("sending");
+        setError("");
 
         try {
           const response = await fetch(WEBHOOK_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              action: "save_card",
-              timestamp: new Date().toISOString(),
-              source: "bizcard-web",
-              visitor: { name, email },
-            }),
+            body: JSON.stringify(payload),
           });
 
           if (!response.ok) throw new Error("Request failed");
           setStatus("success");
           setName("");
           setEmail("");
-        } catch (error) {
+          if (resetDate) setDate("");
+        } catch (err) {
           setStatus("error");
+        }
+      }
+
+      function handleSubmit(event) {
+        event.preventDefault();
+        const action = event.nativeEvent.submitter.value;
+
+        if (!name || !email) {
+          setError("Lütfen isim ve e-posta girin.");
+          return;
+        }
+
+        if (action === "request_meeting") {
+          if (!date) {
+            setError("Toplantı talep etmek için lütfen bir tarih seçin.");
+            return;
+          }
+          if (date < today) {
+            setError("Lütfen bugün veya daha ileri bir tarih seçin.");
+            return;
+          }
+          sendPayload(
+            {
+              action: "request_meeting",
+              timestamp: new Date().toISOString(),
+              source: "bizcard-web",
+              visitor: { name, email },
+              meeting: { preferredDate: date },
+            },
+            true
+          );
+        } else {
+          sendPayload({
+            action: "save_card",
+            timestamp: new Date().toISOString(),
+            source: "bizcard-web",
+            visitor: { name, email },
+          });
         }
       }
 
@@ -344,7 +389,6 @@
               type="text"
               value={name}
               onChange={(event) => setName(event.target.value)}
-              required
             />
           </div>
 
@@ -355,98 +399,33 @@
               type="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              required
-            />
-          </div>
-
-          <button type="submit" disabled={status === "sending"}>
-            {status === "sending" ? "Gönderiliyor..." : "Kartı Kaydet"}
-          </button>
-
-          {status === "success" && (
-            <p className="save-status success">Teşekkürler, bilgileriniz kaydedildi!</p>
-          )}
-          {status === "error" && (
-            <p className="save-status error">Bir şeyler ters gitti, lütfen tekrar deneyin.</p>
-          )}
-        </form>
-      );
-    }
-
-    function MeetingRequestForm() {
-      const [name, setName] = useState("");
-      const [email, setEmail] = useState("");
-      const [date, setDate] = useState("");
-      const [status, setStatus] = useState("idle");
-
-      async function handleSubmit(event) {
-        event.preventDefault();
-        setStatus("sending");
-
-        try {
-          const response = await fetch(WEBHOOK_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              action: "request_meeting",
-              timestamp: new Date().toISOString(),
-              source: "bizcard-web",
-              visitor: { name, email },
-              meeting: { preferredDate: date },
-            }),
-          });
-
-          if (!response.ok) throw new Error("Request failed");
-          setStatus("success");
-          setName("");
-          setEmail("");
-          setDate("");
-        } catch (error) {
-          setStatus("error");
-        }
-      }
-
-      return (
-        <form className="card-form" onSubmit={handleSubmit}>
-          <div className="field">
-            <label htmlFor="meeting-name">İsim</label>
-            <input
-              id="meeting-name"
-              type="text"
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-              required
             />
           </div>
 
           <div className="field">
-            <label htmlFor="meeting-email">E-posta</label>
+            <label htmlFor="visitor-date">Tarih</label>
             <input
-              id="meeting-email"
-              type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              required
-            />
-          </div>
-
-          <div className="field">
-            <label htmlFor="meeting-date">Tarih</label>
-            <input
-              id="meeting-date"
+              id="visitor-date"
               type="date"
               value={date}
+              min={today}
               onChange={(event) => setDate(event.target.value)}
-              required
             />
           </div>
 
-          <button type="submit" disabled={status === "sending"}>
-            {status === "sending" ? "Gönderiliyor..." : "Toplantı Talep Et"}
-          </button>
+          <div className="card-form-actions">
+            <button type="submit" name="action" value="save_card" disabled={status === "sending"}>
+              Kartı Kaydet
+            </button>
+            <button type="submit" name="action" value="request_meeting" disabled={status === "sending"}>
+              Toplantı Talep Et
+            </button>
+          </div>
 
+          {error && <p className="save-status error">{error}</p>}
+          {status === "sending" && <p className="save-status">Gönderiliyor...</p>}
           {status === "success" && (
-            <p className="save-status success">Talebiniz alındı, teşekkürler!</p>
+            <p className="save-status success">Teşekkürler, işleminiz alındı!</p>
           )}
           {status === "error" && (
             <p className="save-status error">Bir şeyler ters gitti, lütfen tekrar deneyin.</p>
@@ -507,9 +486,7 @@
             ))}
           </div>
 
-          <SaveCardForm />
-
-          <MeetingRequestForm />
+          <ContactActionsForm />
 
           <QRCodeBlock url={LIVE_URL} />
         </div>
