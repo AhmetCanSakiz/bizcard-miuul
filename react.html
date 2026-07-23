@@ -164,7 +164,7 @@
     margin: 0;
   }
 
-  .save-form {
+  .card-form {
     margin-top: 28px;
     padding-top: 24px;
     border-top: 1px solid #eef0f3;
@@ -174,19 +174,19 @@
     text-align: left;
   }
 
-  .save-form .field {
+  .card-form .field {
     display: flex;
     flex-direction: column;
     gap: 4px;
   }
 
-  .save-form label {
+  .card-form label {
     font-size: 12px;
     font-weight: 600;
     color: var(--text-muted);
   }
 
-  .save-form input {
+  .card-form input {
     width: 100%;
     padding: 10px 12px;
     border: 1px solid #e3e5ea;
@@ -196,12 +196,12 @@
     color: var(--text-main);
   }
 
-  .save-form input:focus {
+  .card-form input:focus {
     outline: none;
     border-color: var(--accent);
   }
 
-  .save-form button {
+  .card-form button {
     padding: 12px;
     border: none;
     border-radius: 10px;
@@ -213,7 +213,7 @@
     transition: opacity 0.15s ease;
   }
 
-  .save-form button:disabled {
+  .card-form button:disabled {
     opacity: 0.6;
     cursor: not-allowed;
   }
@@ -241,7 +241,7 @@
     const { useMemo, useRef, useEffect, useState } = React;
 
     const LIVE_URL = "https://ahmetcansakiz.github.io/bizcard-miuul/";
-    const SAVE_CARD_WEBHOOK_URL = "https://n8n.rmhy.net/webhook/biz-card";
+    const WEBHOOK_URL = "https://n8n.rmhy.net/webhook/biz-card";
 
     const SOCIAL_ICONS = {
       linkedin: (
@@ -315,7 +315,7 @@
         setStatus("sending");
 
         try {
-          const response = await fetch(SAVE_CARD_WEBHOOK_URL, {
+          const response = await fetch(WEBHOOK_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -336,7 +336,7 @@
       }
 
       return (
-        <form className="save-form" onSubmit={handleSubmit}>
+        <form className="card-form" onSubmit={handleSubmit}>
           <div className="field">
             <label htmlFor="visitor-name">İsim</label>
             <input
@@ -365,6 +365,88 @@
 
           {status === "success" && (
             <p className="save-status success">Teşekkürler, bilgileriniz kaydedildi!</p>
+          )}
+          {status === "error" && (
+            <p className="save-status error">Bir şeyler ters gitti, lütfen tekrar deneyin.</p>
+          )}
+        </form>
+      );
+    }
+
+    function MeetingRequestForm() {
+      const [name, setName] = useState("");
+      const [email, setEmail] = useState("");
+      const [date, setDate] = useState("");
+      const [status, setStatus] = useState("idle");
+
+      async function handleSubmit(event) {
+        event.preventDefault();
+        setStatus("sending");
+
+        try {
+          const response = await fetch(WEBHOOK_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              action: "request_meeting",
+              timestamp: new Date().toISOString(),
+              source: "bizcard-web",
+              visitor: { name, email },
+              meeting: { preferredDate: date },
+            }),
+          });
+
+          if (!response.ok) throw new Error("Request failed");
+          setStatus("success");
+          setName("");
+          setEmail("");
+          setDate("");
+        } catch (error) {
+          setStatus("error");
+        }
+      }
+
+      return (
+        <form className="card-form" onSubmit={handleSubmit}>
+          <div className="field">
+            <label htmlFor="meeting-name">İsim</label>
+            <input
+              id="meeting-name"
+              type="text"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              required
+            />
+          </div>
+
+          <div className="field">
+            <label htmlFor="meeting-email">E-posta</label>
+            <input
+              id="meeting-email"
+              type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              required
+            />
+          </div>
+
+          <div className="field">
+            <label htmlFor="meeting-date">Tarih</label>
+            <input
+              id="meeting-date"
+              type="date"
+              value={date}
+              onChange={(event) => setDate(event.target.value)}
+              required
+            />
+          </div>
+
+          <button type="submit" disabled={status === "sending"}>
+            {status === "sending" ? "Gönderiliyor..." : "Toplantı Talep Et"}
+          </button>
+
+          {status === "success" && (
+            <p className="save-status success">Talebiniz alındı, teşekkürler!</p>
           )}
           {status === "error" && (
             <p className="save-status error">Bir şeyler ters gitti, lütfen tekrar deneyin.</p>
@@ -426,6 +508,8 @@
           </div>
 
           <SaveCardForm />
+
+          <MeetingRequestForm />
 
           <QRCodeBlock url={LIVE_URL} />
         </div>
