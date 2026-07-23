@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dijital Kartvizit</title>
+<style>
+  :root {
+    --accent: #5b3df5;
+    --accent-light: #f0edfe;
+    --text-main: #1f2430;
+    --text-muted: #6b7280;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f4f5f7;
+    font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    padding: 24px;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 360px;
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(15, 15, 25, 0.08);
+    padding: 40px 32px;
+    text-align: center;
+  }
+
+  .avatar {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    background: var(--accent-light);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    font-weight: 600;
+    margin: 0 auto 20px;
+  }
+
+  .name {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0 0 4px;
+  }
+
+  .title {
+    font-size: 15px;
+    color: var(--accent);
+    font-weight: 600;
+    margin: 0 0 2px;
+  }
+
+  .company {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin: 0 0 24px;
+  }
+
+  .divider {
+    height: 1px;
+    background: #eef0f3;
+    margin: 0 0 24px;
+  }
+
+  .info-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 28px;
+    text-align: left;
+  }
+
+  .info-list li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    color: var(--text-main);
+    padding: 8px 0;
+  }
+
+  .info-list .icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    color: var(--accent);
+  }
+
+  .info-list a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .info-list a:hover {
+    text-decoration: underline;
+  }
+
+  .socials {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  .socials a {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--accent-light);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .socials a:hover {
+    background: var(--accent);
+    color: #ffffff;
+  }
+
+  .socials svg {
+    width: 18px;
+    height: 18px;
+  }
+</style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="avatar">ACS</div>
+
+    <p class="name">Ahmet Can Sakız</p>
+    <p class="title">Eğitmen &amp; Miuul</p>
+    
+
+    <div class="divider"></div>
+
+    <ul class="info-list">
+      <li>
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+        </svg>
+        <a href="tel:+905551234567">+90 555 123 45 67</a>
+      </li>
+      <li>
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 4h16v16H4z" opacity="0"/>
+          <path d="M22 6l-10 7L2 6"/>
+          <rect x="2" y="4" width="20" height="16" rx="2"/>
+        </svg>
+        <a href="mailto:ahmetcansakiz@gmail.com">ahmetcansakiz@gmail.com</a>
+      </li>
+      <li>
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+        </svg>
+        <a href="https://www.ibadanismanlik.com" target="_blank" rel="noopener">www.ibadanismanlik.com</a>
+      </li>
+    </ul>
+
+    <div class="socials">
+      <a href="#" aria-label="LinkedIn">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.94 5a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM3.5 8.75h3v11.75h-3zM9.5 8.75h2.87v1.6h.04c.4-.76 1.38-1.6 2.84-1.6 3.04 0 3.6 2 3.6 4.6v6.9h-3v-6.12c0-1.46-.03-3.34-2.04-3.34-2.04 0-2.35 1.6-2.35 3.24v6.22h-3z"/></svg>
+      </a>
+      <a href="#" aria-label="Instagram">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+      </a>
+    </div>
+  </div>
+
+</body>
+
